@@ -78,6 +78,7 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+loss = tf.reduce_mean(cross_entropy)
 
 # Add ops to save and restore all the variables.
 saver = tf.train.Saver()
@@ -88,9 +89,11 @@ with tf.Session() as sess:
         batch = mnist.train.next_batch(50)
         if i % 100 == 0:
             train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
-            print('step %d, training accuracy %g' % (i, train_accuracy))
+            train_loss = loss.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
+            print('step: (%d), training accuracy: (%g) training loss: (%g)' % (i, train_accuracy, train_loss))
             train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-    print('test accuracy %g' % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+    print('test accuracy: (%g)' % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+    print('test loss: (%g)' % loss.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
     
     save_path = saver.save(sess, "my_models_tmp/model.ckpt")
     print("Model saved in file: %s" % save_path)
