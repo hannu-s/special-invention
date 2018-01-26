@@ -29,8 +29,6 @@ Y_test = np_utils.to_categorical(y_test, number_of_classes)
 # 3. Pooling
 # Repeat Steps 1,2,3 for adding more hidden layers
 
-
-
 # 4. After that make a fully connected network
 # This fully connected network gives ability to
 # the CNN to classify the samples
@@ -47,6 +45,9 @@ model.add(BatchNormalization(axis=-1))
 model.add(Activation('relu'))
 model.add(Conv2D(64, (3, 3)))
 model.add(BatchNormalization(axis=-1))
+model.add(Activation('relu')) #extra
+model.add(Conv2D(64, (3, 3))) #extra
+model.add(BatchNormalization(axis=-1)) #extra
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Flatten())
@@ -66,7 +67,8 @@ gen = ImageDataGenerator(rotation_range=8, width_shift_range=0.08, shear_range=0
 test_gen = ImageDataGenerator()
 train_generator = gen.flow(X_train, Y_train, batch_size=64)
 test_generator = test_gen.flow(X_test, Y_test, batch_size=64)
-model.fit_generator(train_generator, steps_per_epoch=60000//64, epochs=5, validation_data=test_generator, validation_steps=10000//64)
+#model.fit_generator(train_generator, steps_per_epoch=60000//64, epochs=5, validation_data=test_generator, validation_steps=10000//64)
+model.fit_generator(train_generator, steps_per_epoch=6000//64, epochs=5, validation_data=test_generator, validation_steps=10000//64)
 
 
 

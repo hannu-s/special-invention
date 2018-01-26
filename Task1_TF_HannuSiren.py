@@ -36,11 +36,15 @@ def plotNNFilter(units):
         plt.imshow(units[0,:,:,i], interpolation="nearest", cmap="gray")
         plt.show()
 
-
-
 # Create the model
 def create_model():
     x = tf.placeholder(tf.float32, [None, 784])
+    #norm_x = tf.layers.batch_normalization(x, axis=-1, momentum=0.99, epsilon=0.001, center=True, scale=True, beta_initializer=tf.zeros_initializer(),
+    #gamma_initializer=tf.ones_initializer(), moving_mean_initializer=tf.zeros_initializer(), moving_variance_initializer=tf.ones_initializer(), beta_regularizer=None,
+    #gamma_regularizer=None, beta_constraint=None, gamma_constraint=None, training=False, trainable=True, name=None, reuse=None, renorm=False,
+    #renorm_clipping=None, renorm_momentum=0.99, fused=None)
+
+    #x_image = tf.reshape(norm_x, [-1, 28, 28, 1])
     x_image = tf.reshape(x, [-1, 28, 28, 1])
 
     W_conv1 = weight_variable([5, 5, 1, 32])
@@ -55,6 +59,12 @@ def create_model():
     h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
     h_pool2 = max_pool_2x2(h_conv2)
 
+    W_conv3 = weight_variable([5, 5, 64, 64])   #extra
+    b_conv3 = bias_variable([64]))   #extra
+
+    h_conv3 = tf.nn.relu(conv2d(h_pool2, W_conv3) + b_conv3))   #extra
+    h_pool3 = max_pool_2x2(h_conv3))   #extra
+
     W_fc1 = weight_variable([7 * 7 * 64, 1024])
     b_fc1 = bias_variable([1024])
 
@@ -68,9 +78,9 @@ def create_model():
     b_fc2 = bias_variable([10])
 
     y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-    return x, keep_prob, h_conv2, y_conv
+    return x, keep_prob, h_conv3, y_conv
 
-x, keep_prob, h_conv2, y_conv = create_model()
+x, keep_prob, h_conv, y_conv = create_model()
 
 # Define loss and optimizer
 y_ = tf.placeholder(tf.float32, [None, 10])
@@ -120,4 +130,4 @@ with tf.Session() as sess:
     predicted_value = tf.argmax(y_conv, 1)
     print('is classified as: {}'.format(predicted_value.eval(session= sess, feed_dict={x:img_to_use.reshape(1,784),keep_prob: 1.0})))
     print("conv layer:")
-    getActivations(h_conv2,img_to_use)
+    getActivations(h_conv,img_to_use)
